@@ -16,21 +16,21 @@ def draw_vertical_line(event, x, y, flags, param):
         line_image = warped_image.copy()
         cv2.line(line_image, (x, 0), (x, line_image.shape[0]), (0, 255, 0), 1)
         cv2.imshow("Warped ROI", line_image)
-        warped_image = line_image  # Update the global variable
+        warped_image = line_image  
 
 def click_and_crop(event, x, y, flags, param):
     global roi_start, roi_end, cropping, roi_cropped, perspective_points, perspective_done, warped_image
 
-    # Record the starting point when the left mouse button is pressed
+   
     if event == cv2.EVENT_LBUTTONDOWN and not cropping and not perspective_done:
         roi_start = (x, y)
         cropping = True
     
-    # Record the end point when the left mouse button is dragged
+    
     elif event == cv2.EVENT_MOUSEMOVE and cropping:
         roi_end = (x, y)
 
-    # When the left mouse button is released, show the cropped ROI in a new window
+   
     elif event == cv2.EVENT_LBUTTONUP and cropping:
         roi_end = (x, y)
         cropping = False
@@ -69,7 +69,7 @@ def four_point_transform(image, pts):
     rect = order_points(pts)
     (tl, tr, br, bl) = rect
 
-    # Compute the width and height of the new image
+    
     widthA = np.linalg.norm(br - bl)
     widthB = np.linalg.norm(tr - tl)
     maxWidth = max(int(widthA), int(widthB))
@@ -78,32 +78,32 @@ def four_point_transform(image, pts):
     heightB = np.linalg.norm(tl - bl)
     maxHeight = max(int(heightA), int(heightB))
 
-    # Perspective transformation target points
+    
     dst = np.array([
         [0, 0],
         [maxWidth - 1, 0],
         [maxWidth - 1, maxHeight - 1],
         [0, maxHeight - 1]], dtype="float32")
 
-    # Calculate and apply the perspective transformation matrix
+
     M = cv2.getPerspectiveTransform(rect, dst)
     warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
 
     return warped
 
-# Load and resize the image
+
 image = cv2.imread('test.png')
 image = cv2.resize(image, (640, 480))
 
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", click_and_crop)
 
-# Display the image and wait for key input
+
 while True:
     cv2.imshow("image", image)
     key = cv2.waitKey(1) & 0xFF
 
-    # Display a temporary ROI while dragging
+
     if cropping and roi_start and roi_end:
         temp_image = image.copy()
         cv2.rectangle(temp_image, roi_start, roi_end, (0, 255, 0), 2)
@@ -111,7 +111,7 @@ while True:
     else:
         cv2.imshow("image", image)
 
-    # Exit when 'q' key is pressed
+ 
     if key == ord("q"):
         break
 
